@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salon Video Transition</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #imageContainer, #videoContainer {
+      position: absolute;
+      top: 10%;
+      left: 10%;
+      width: 80%;
+      height: 80vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    #photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none; /* Disables link interaction at the start */
+    }
+
+    #photoLink {
+      display: none; /* Initially hidden */
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    #playvideo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      color: white;
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    #playvideo:hover {
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    #videoContainer {
+      display: none;
+      width: 80%;
+      height: 80vh;
+      z-index: 3;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Image (Now Exactly 80% of the Screen) -->
+  <div id="imageContainer">
+    <img id="photo" src="https://i.ibb.co/2786MY6P/DALL-E-2025-03-09-20-01-36-A-refined-minimalistic-and-feminine-logo-for-Southern-Chic-Salon-co-with.webp" alt="Salon Image">
+    <a id="photoLink" href="https://southernchicsalon.com/" target="_blank"></a>
+  </div>
+
+  <!-- Play Button -->
+  <a href="#" id="playvideo">Play Video</a>
+
+  <!-- YouTube Embedded Video (Now Centered) -->
+  <div id="videoContainer">
+    <iframe id="videoFrame" src="https://www.youtube.com/embed/JD_S147xNOY?enablejsapi=1&controls=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  </div>
+  
+  <script>
+    let player;
+
+    // Fade in the image and play button when page loads
+    window.onload = function () {
+      document.getElementById('imageContainer').style.opacity = '1';
+      document.getElementById('playvideo').style.opacity = '1';
+    };
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('videoFrame', {
+        events: {
+          'onStateChange': function(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+              // Fade out the video and fade in the image smoothly
+              document.getElementById('videoContainer').style.opacity = '0';
+              setTimeout(() => {
+                document.getElementById('videoContainer').style.display = 'none';
+                document.getElementById('imageContainer').style.display = 'flex';
+                document.getElementById('imageContainer').style.opacity = '1';
+                document.getElementById('photoLink').style.display = 'block'; // Show link after video ends
+              }, 1000);
+            }
+          }
+        }
+      });
+    }
+
+    document.getElementById('playvideo').addEventListener('click', function(event) {
+      event.preventDefault();
+
+      // Hide the play button
+      document.getElementById('playvideo').style.opacity = '0';
+
+      // Fade out the image and fade in the video
+      document.getElementById('imageContainer').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('imageContainer').style.display = 'none';
+        document.getElementById('videoContainer').style.display = 'flex';
+        document.getElementById('videoContainer').style.opacity = '1';
+      }, 1000);
+
+      // Start the video immediately
+      if (player) {
+        player.playVideo();
+      }
+    });
+
+    // Load YouTube API
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.body.appendChild(tag);
+  </script>
+</body>
+</html>
